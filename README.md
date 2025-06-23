@@ -16,6 +16,10 @@
 
 ---
 
+## 🖥 Демонстрация
+https://drive.google.com/file/d/1BEi0yGXO476hPUSj6kre0pcpOtlfKZLf/view
+---
+
 ## 🛠 Технологии
 
 - **Kotlin**
