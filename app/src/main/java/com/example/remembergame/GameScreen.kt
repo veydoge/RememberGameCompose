@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.remembergame.MemoryCard
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 data class Card(
@@ -30,7 +32,7 @@ data class Card(
 )
 
 val cardValues = listOf("🍎", "🍌", "🍒", "🍇", "🍉", "🍓")
-val cardList = (cardValues + cardValues).shuffled().mapIndexed { index, value ->
+var cardList = (cardValues + cardValues).shuffled().mapIndexed { index, value ->
     Card(id = index, value = value)
 }
 
@@ -44,6 +46,8 @@ fun GameScreen() {
     val isWin by remember(cards){
         derivedStateOf { cards.all{it.isMatched} }
     }
+    val scope = rememberCoroutineScope()
+
 
 
 
@@ -75,8 +79,26 @@ fun GameScreen() {
 
     }
 
+
+
     Column(modifier = Modifier.fillMaxSize()
         .background(Color(0xFFFAF8FF)),){
+        Button(onClick = {
+            blockInput = true
+            flippedCards = emptyList()
+            cards = cards.map { it.copy(isFlipped = false, isMatched = false) }
+
+            scope.launch {
+                delay(300)
+                cards = (cardValues + cardValues).shuffled().mapIndexed { index, value ->
+                    Card(id = index, value = value)
+                }
+                blockInput = false
+            }
+
+        }, modifier = Modifier.align(Alignment.CenterHorizontally).offset(0.dp, 100.dp)) {
+            Text(text = "Начать снова", fontSize = 25.sp)
+        }
         Spacer(modifier = Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.2f))
         Text(text = if (isWin) "Вы победили" else "", fontSize = 28.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
 

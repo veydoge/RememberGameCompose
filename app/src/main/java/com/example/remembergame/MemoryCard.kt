@@ -49,7 +49,7 @@ fun MemoryCard(card: Card, onClick: () -> Unit) {
                 text = "?",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Red
+                color = Color.White
             )
         }
     }
