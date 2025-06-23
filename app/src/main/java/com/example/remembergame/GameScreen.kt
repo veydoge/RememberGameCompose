@@ -40,6 +40,7 @@ var cardList = (cardValues + cardValues).shuffled().mapIndexed { index, value ->
 @Preview()
 @Composable
 fun GameScreen() {
+
     var cards by remember { mutableStateOf(cardList) }
     var flippedCards by remember { mutableStateOf(listOf<Card>()) }
     var blockInput by remember { mutableStateOf(false) }
@@ -49,33 +50,37 @@ fun GameScreen() {
     val scope = rememberCoroutineScope()
 
 
+    suspend fun checkCards() {
+        if (flippedCards.size != 2) return
 
+        val first = flippedCards[0]
+        val second = flippedCards[1]
+        blockInput = true
+
+        if (first.value == second.value) {
+            // Совпадение — помечаем как найденные
+            cards = cards.map {
+                if (it.value == first.value) it.copy(isMatched = true)
+                else it
+            }
+        } else {
+            // Не совпали — ждём и переворачиваем обратно
+            delay(800)
+            cards = cards.map {
+                if (it.id == first.id || it.id == second.id) it.copy(isFlipped = false)
+                else it
+            }
+        }
+
+        flippedCards = emptyList()
+        blockInput = false
+    }
 
 
 
     // Сравнение карт при открытии двух
     LaunchedEffect(flippedCards) {
-        if (flippedCards.size == 2) {
-            val first = flippedCards[0]
-            val second = flippedCards[1]
-            blockInput = true
-
-            if (first.value == second.value) {
-                cards = cards.map {
-                    if (it.value == first.value) it.copy(isMatched = true)
-                    else it
-                }
-            } else {
-                delay(800)
-                cards = cards.map {
-                    if (it.id == first.id || it.id == second.id) it.copy(isFlipped = false)
-                    else it
-                }
-            }
-
-            flippedCards = emptyList()
-            blockInput = false
-        }
+        checkCards()
 
     }
 
@@ -133,3 +138,4 @@ fun GameScreen() {
     }
 
 }
+
